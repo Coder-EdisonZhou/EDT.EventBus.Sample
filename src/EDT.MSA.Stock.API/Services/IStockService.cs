@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EDT.MSA.Stocking.API.Repositories
+namespace EDT.MSA.Stocking.API.Services
 {
-    public interface IStockRepository
+    public interface IStockService
     {
         Task<IList<Stock>> GetAllStocks();
         Task<Stock> GetStock(string productId);

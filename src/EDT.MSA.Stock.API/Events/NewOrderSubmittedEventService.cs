@@ -2,19 +2,19 @@
 using EDT.MSA.API.Shared.Events;
 using EDT.MSA.API.Shared.Models;
 using EDT.MSA.API.Shared.Utils;
-using EDT.MSA.Stocking.API.Repositories;
+using EDT.MSA.Stocking.API.Services;
 using System.Threading.Tasks;
 
-namespace EDT.MSA.Stocking.API.Services
+namespace EDT.MSA.Stocking.API.Events
 {
     public class NewOrderSubmittedEventService : INewOrderSubmittedEventService, ICapSubscribe
     {
-        private readonly IStockRepository _stockRepository;
+        private readonly IStockService _stockService;
         private readonly IMsgTracker _msgTracker;
 
-        public NewOrderSubmittedEventService(IStockRepository stockRepository, IMsgTracker msgTracker)
+        public NewOrderSubmittedEventService(IStockService stockService, IMsgTracker msgTracker)
         {
-            _stockRepository = stockRepository;
+            _stockService = stockService;
             _msgTracker = msgTracker;
         }
 
@@ -26,7 +26,7 @@ namespace EDT.MSA.Stocking.API.Services
                 return null;
 
             // 产品Id合法性校验
-            var productStock = await _stockRepository.GetStock(eventData.MessageBody.ProductId);
+            var productStock = await _stockService.GetStock(eventData.MessageBody.ProductId);
             if (productStock == null)
                 return null;
 
@@ -37,7 +37,7 @@ namespace EDT.MSA.Stocking.API.Services
                 // 扣减产品实际库存
                 productStock.StockQuantity -= eventData.MessageBody.Quantity;
                 // 提交至数据库
-                await _stockRepository.UpdateStock(productStock);
+                await _stockService.UpdateStock(productStock);
                 result = new EventData<ProductStockDeductedEvent>(new ProductStockDeductedEvent(eventData.MessageBody.OrderId, true));
             }
             else

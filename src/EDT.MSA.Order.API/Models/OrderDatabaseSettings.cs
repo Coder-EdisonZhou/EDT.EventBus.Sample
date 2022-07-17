@@ -1,4 +1,4 @@
-﻿namespace EDT.MSA.Ordering.API.Repositories
+﻿namespace EDT.MSA.Ordering.API.Models
 {
     public class OrderDatabaseSettings : IOrderDatabaseSettings
     {

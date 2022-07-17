@@ -1,5 +1,5 @@
+using EDT.MSA.Stocking.API.Events;
 using EDT.MSA.Stocking.API.Models;
-using EDT.MSA.Stocking.API.Repositories;
 using EDT.MSA.Stocking.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,8 +36,8 @@ namespace EDT.MSA.Stocking.API
                 Configuration.GetSection(nameof(StockDatabaseSettings)));
             services.AddSingleton<IStockDatabaseSettings>(
                 sp => sp.GetRequiredService<IOptions<StockDatabaseSettings>>().Value);
-            // Repositories
-            services.AddScoped<IStockRepository, StockRepository>();
+            // Services
+            services.AddSingleton<IStockService, StockService>();
             // Redis
             services.AddRedisClient(Configuration);
             // MsgTracker

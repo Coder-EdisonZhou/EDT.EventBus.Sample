@@ -1,5 +1,5 @@
+using EDT.MSA.Ordering.API.Events;
 using EDT.MSA.Ordering.API.Models;
-using EDT.MSA.Ordering.API.Repositories;
 using EDT.MSA.Ordering.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,7 +38,8 @@ namespace EDT.MSA.Ordering.API
             services.AddSingleton<IOrderDatabaseSettings>(
                 sp => sp.GetRequiredService<IOptions<OrderDatabaseSettings>>().Value);
             // Repositories
-            services.AddScoped<IOrderRepository, OrderRepository>();
+            //services.AddSingleton<IOrderRepository, OrderRepository>();
+            services.AddSingleton<IOrderService, OrderService>();
             // EventBus
             services.AddCap(option =>
             {

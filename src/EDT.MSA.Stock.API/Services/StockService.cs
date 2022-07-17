@@ -3,17 +3,19 @@ using MongoDB.Driver;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EDT.MSA.Stocking.API.Repositories
+namespace EDT.MSA.Stocking.API.Services
 {
-    public class StockRepository : IStockRepository
+    public class StockService : IStockService
     {
+        private readonly IMongoClient _client;
         private readonly IMongoCollection<Stock> _stocks;
 
-        public StockRepository(IStockDatabaseSettings settings)
+        public StockService(IStockDatabaseSettings settings)
         {
-            var mongoClient = new MongoClient(settings.ConnectionString);
-            var mongoDatabase = mongoClient.GetDatabase(settings.DatabaseName);
-            _stocks = mongoDatabase.GetCollection<Stock>(settings.StockCollectionName);
+            _client = new MongoClient(settings.ConnectionString);
+            _stocks = _client
+                .GetDatabase(settings.DatabaseName)
+                .GetCollection<Stock>(settings.StockCollectionName);
         }
 
         public async Task<IList<Stock>> GetAllStocks()

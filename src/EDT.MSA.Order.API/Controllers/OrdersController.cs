@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
-using DotNetCore.CAP;
-using EDT.MSA.API.Shared.Events;
-using EDT.MSA.API.Shared.Models;
 using EDT.MSA.API.Shared.Utils;
 using EDT.MSA.Ordering.API.Models;
-using EDT.MSA.Ordering.API.Repositories;
+using EDT.MSA.Ordering.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -16,28 +13,26 @@ namespace EDT.MSA.Ordering.API.Controllers
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
     {
-        private readonly IOrderRepository _orderRepository;
+        private readonly IOrderService _orderService;
         private readonly IMapper _mapper;
-        private readonly ICapPublisher _eventPublisher;
 
-        public OrdersController(IOrderRepository orderRepository, IMapper mapper, ICapPublisher eventPublisher)
+        public OrdersController(IOrderService orderService, IMapper mapper)
         {
-            _orderRepository = orderRepository;
+            _orderService = orderService;
             _mapper = mapper;
-            _eventPublisher = eventPublisher;
         }
 
         [HttpGet]
         public async Task<ActionResult<IList<OrderVO>>> GetAllOrders()
         {
-            var orders = await _orderRepository.GetAllOrders();
+            var orders = await _orderService.GetAllOrders();
             return Ok(_mapper.Map<IList<OrderVO>>(orders));
         }
 
         [HttpGet("id")]
         public async Task<ActionResult<OrderVO>> GetOrder(string id)
         {
-            var order = await _orderRepository.GetOrder(id);
+            var order = await _orderService.GetOrder(id);
             if (order == null)
                 return NotFound();
 
@@ -52,14 +47,8 @@ namespace EDT.MSA.Ordering.API.Controllers
             order.OrderId = SnowflakeGenerator.Instance().GetId().ToString();
             order.CreatedDate = DateTime.Now;
             order.Status = OrderStatus.Pending;
-            // 02.订单数据存入MongoDB
-            await _orderRepository.CreateOrder(order);
-            // 03.发布订单已生成事件消息
-            await _eventPublisher.PublishAsync(
-                name: EventNameConstants.TOPIC_ORDER_SUBMITTED,
-                contentObj: new EventData<NewOrderSubmittedEvent>(new NewOrderSubmittedEvent(order.OrderId, order.ProductId, order.Quantity)),
-                callbackName: EventNameConstants.TOPIC_STOCK_DEDUCTED
-                );
+            // 02.订单数据提交
+            await _orderService.CreateOrder(order);
 
             return CreatedAtAction(nameof(GetOrder), new { id = order.OrderId }, _mapper.Map<OrderVO>(order));
         }

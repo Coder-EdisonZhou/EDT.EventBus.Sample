@@ -2,7 +2,7 @@
 using EDT.MSA.API.Shared.Models;
 using System.Threading.Tasks;
 
-namespace EDT.MSA.Ordering.API.Services
+namespace EDT.MSA.Ordering.API.Events
 {
     public interface IProductStockDeductedEventService
     {

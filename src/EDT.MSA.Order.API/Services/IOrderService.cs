@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EDT.MSA.Ordering.API.Repositories
+namespace EDT.MSA.Ordering.API.Services
 {
-    public interface IOrderRepository
+    public interface IOrderService
     {
         Task<IList<Order>> GetAllOrders();
         Task<Order> GetOrder(string orderId);

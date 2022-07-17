@@ -2,7 +2,7 @@
 using EDT.MSA.API.Shared.Models;
 using System.Threading.Tasks;
 
-namespace EDT.MSA.Stocking.API.Services
+namespace EDT.MSA.Stocking.API.Events
 {
     public interface INewOrderSubmittedEventService
     {

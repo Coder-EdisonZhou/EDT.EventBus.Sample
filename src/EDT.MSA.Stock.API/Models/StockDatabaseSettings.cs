@@ -1,4 +1,4 @@
-﻿namespace EDT.MSA.Stocking.API.Repositories
+﻿namespace EDT.MSA.Stocking.API.Models
 {
     public class StockDatabaseSettings : IStockDatabaseSettings
     {
